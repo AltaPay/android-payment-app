@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">Payment App</string>
+    <string name="cookie">PHPSESSID=v8okvijo4l7s27mvoku9d2scn5; form_key=RGTf8khmCRgpnnF0; user_allowed_save_cookie={\"1\":1}; form_key=RGTf8khmCRgpnnF0; mage-cache-storage={}; mage-cache-storage-section-invalidation={}; mage-messages=; recently_viewed_product={}; recently_viewed_product_previous={}; recently_compared_product={}; recently_compared_product_previous={}; product_data_storage={}; mage-cache-sessid=true; private_content_version=fafbc9887d7c3ed7a58b6a0afc6763fc; section_data_ids={\"cart\":1656048566,\"directory-data\":1656048566,\"messages\":1656048606}</string>
+</resources>
