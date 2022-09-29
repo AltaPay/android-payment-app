@@ -64,8 +64,16 @@ public class MainActivity extends AppCompatActivity {
                 Utils.showDialog(context);
                 String username = "ij@technologies.dk";
                 String password = "WQJ&le3cxb7g@wH4Nh";
-                paymentRequestMethod("https://testgateway.pensio.com/merchant/API/createPaymentRequest",
-                        username,password,paymentModel,customerInfo,configModel,infoModel,orderLines);
+                paymentRequestMethod(
+                        "https://testgateway.pensio.com/merchant/API/createPaymentRequest",
+                        username,
+                        password,
+                        paymentModel,
+                        customerInfo,
+                        configModel,
+                        infoModel,
+                        orderLines
+                );
             }
         });
 
