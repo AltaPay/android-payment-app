@@ -74,7 +74,7 @@ public class PaymentRequestHelper {
             // Get the Payment request information parameters
             @Override
             protected Map<String, String> getParams() {
-                //Add Payment Request Params here
+                // Add Payment Request Params here
                 return map;
             }
         };

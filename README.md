@@ -1,6 +1,6 @@
 # AltaPay for Android APP
 
-AltaPay has made it much easier for you as merchant/developer to receive secure payments in your Android app
+The project contains a set of examples of how to display our payment page in an android native app
 
 ## Usage
 
@@ -8,6 +8,7 @@ AltaPay has made it much easier for you as merchant/developer to receive secure 
 - Implement the required dependencies
 - Create PaymentRequestHelper object
     ```PaymentRequestHelper helper = new PaymentRequestHelper(ActivityName.this);```
+- To open or close the webview create the object of ```PaymentWebView``` class
 
 ![Altapay-MobileApp-Setup](docs/Altapay-MobileApp-Setup.png)
 
