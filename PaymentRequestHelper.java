@@ -1,4 +1,4 @@
-package com.app.paymentapp;
+package com.app.paymentapp.PaymentLibrary;
 
 import android.content.Context;
 import android.util.Base64;
@@ -35,11 +35,10 @@ public class PaymentRequestHelper {
     private String password;
     private String payment_url;
     private DataCallback callback;
-    private WebView webView;
 
-    public PaymentRequestHelper(Context context, WebView webView) {
+    // This is the constructor of this helper class
+    public PaymentRequestHelper(Context context) {
         this.context = context;
-        this.webView = webView;
     }
 
     /*
@@ -53,7 +52,7 @@ public class PaymentRequestHelper {
         StringRequest request = new StringRequest(Request.Method.POST, payment_url, new com.android.volley.Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
-                parseXml(response);
+                callback.onSuccess(response);
             }
         }, new com.android.volley.Response.ErrorListener() {
             @Override
@@ -98,86 +97,9 @@ public class PaymentRequestHelper {
     }
 
 
-    // Convert XML to Json
-    private void parseXml(String response) {
-        try {
-            XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
-            factory.setNamespaceAware(true);
-            XmlPullParser xpp = factory.newPullParser();
-            DataModel model = new DataModel();
-            xpp.setInput(new StringReader(response)); // pass input whatever xml you have
-            int eventType = xpp.getEventType();
-            while (eventType != XmlPullParser.END_DOCUMENT) {
-                if (eventType == XmlPullParser.START_DOCUMENT) {
-                } else if (eventType == XmlPullParser.START_TAG)// here you get the Start Tag
-                {
-                    if (xpp.getName().equals("Url")) {
-                        if (!model.isAdded) {
-                            model.name = xpp.getName();
-                            model.isAdded = true;
-                        }
-                    }
-                } else if (eventType == XmlPullParser.END_TAG) {
-                    Log.e("Tag End ", xpp.getName());
-                } else if (eventType == XmlPullParser.TEXT) {
-                    Log.e("TagText", xpp.getText()); // here you get the text from xml
-
-                    if (model.isAdded)//this condition is applied to get url from the response.
-                    {
-                        if (model.text == null) {
-                            model.text = xpp.getText();
-                        }
-                        /*
-                        Add data in model or any variable and set it in callback.onSuccess
-                        function which is call in MyJavaScriptInterface class.
-                        */
-                     //  if(condition){
-                     //  }
-                    }
-
-                }
-                eventType = xpp.next();
-            }
-            Log.e("modelDataEnd: ", new Gson().toJson(model) + "");
-
-            webView.getSettings().setJavaScriptEnabled(true);
-            webView.setWebViewClient(mWebViewClient);
-            webView.addJavascriptInterface(new MyJavaScriptInterface(),
-                    "android");
-            webView.loadUrl(model.text);
-
-        } catch (XmlPullParserException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    WebViewClient mWebViewClient = new WebViewClient() {
-        @Override
-        public void onPageFinished(WebView view, String url) {
-            view.loadUrl("javascript:window.android.onUrlChange(window.location.href);");
-        }
-
-
-    };
-
-    // This method trigger every time whenever the URL change.
-    class MyJavaScriptInterface {
-        @JavascriptInterface
-        public void onUrlChange(String url) {
-            Log.e("hydrated", "onUrlChange" + url);
-            // if you want to close the webView, write the logic here
-            callback.onSuccess("Add value here");
-        }
-    }
-
-    private class DataModel {
-        public String name, text;
-        public boolean isAdded;
-    }
-
-    // Handle the success response
+    //This interface is not used for outside the class.
+    //this will use within payment request helper class only.
+    //this is the callback function used to get onSuccess response.
     public interface DataCallback extends BaseCallback {
         void onSuccess(String data);
     }
