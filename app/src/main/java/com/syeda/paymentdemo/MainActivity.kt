@@ -6,69 +6,6 @@ import android.webkit.WebView
 import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-
-/*class MainActivity : AppCompatActivity() {
-    lateinit var progressDialog:ProgressDialog
-    lateinit var webView: WebView
-    lateinit var btnPayment: Button
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-        progressDialog=ProgressDialog(this)
-        progressDialog.setTitle("Creating Payment Request")
-        progressDialog.setMessage("Loading")
-        webView = findViewById(R.id.webView)
-        btnPayment = findViewById(R.id.btnPayment)
-        btnPayment.setOnClickListener {
-            createPaymentRequest()
-        }
-
-
-    }
-
-    private fun createPaymentRequest() {
-        progressDialog.show()
-        val helper = PaymentRequestHelper(this@MainActivity);
-        helper.setPaymentUrl("https://testgateway.pensio.com/merchant/API/createPaymentRequest");
-        helper.addParam(getParam());
-        helper.setAuthParam("{gateway_username}", "{gateway_password}");
-        helper.CallPaymentRequestApi(object : PaymentRequestHelper.DataCallback {
-            override fun onError(msg: String?) {
-                Log.e("onError", "->" + msg)
-                progressDialog.dismiss()
-                Toast.makeText(this@MainActivity,""+msg,Toast.LENGTH_LONG).show()
-            }
-
-            override fun onSuccess(data: String?) {
-                Log.e("onSuccess", "->" + data)
-                val paymentWebView = PaymentWebView();
-                progressDialog.dismiss()
-                paymentWebView.setPaymentWebView(webView,
-                    extractUrl(data)
-                ) { }
-            }
-
-        })
-    }
-
-    private fun getParam(): MutableMap<String, String> {
-        val map: HashMap<String, String> = HashMap();
-        map["terminal"] = "EmbraceIT Test Terminal"
-        map["shop_orderid"] = "android100"
-        map["amount"] = "100"
-        map["currency"] = "DKK"
-        map["config[callback_form]"] = "https://6901f4371c0b.ngrok-free.app/examples/exm1.php"
-        return map
-    }
-
-    fun extractUrl(response: String?): String {
-        val regex = "<Url>(.*?)</Url>".toRegex()
-        val matchResult = response?.let { regex.find(it) }
-        return matchResult?.groups?.get(1)?.value.toString()
-    }
-}*/
-
-
 import com.altapay.merchant.*
 import kotlinx.coroutines.Job
 

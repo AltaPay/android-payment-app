@@ -43,9 +43,17 @@ dependencies {
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
     implementation(project(":altapayMerchant"))
+    implementation(project(":altapayCheckout"))
     testImplementation(libs.junit)
     implementation(libs.volley)
     implementation(libs.gson)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+
+    // ViewModel and LiveData dependencies
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1")
+    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.5.1")
+
+    // Kotlin Coroutines support
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4")
 }

@@ -1,0 +1,13 @@
+# Local configuration file (sdk path, etc)
+local.properties
+# Ignore Gradle build files
+.gradle
+/build
+# Ignore IDE files
+.idea/
+# Ignore local.properties file
+local.properties
+# Ignore JetBrains IDE files
+*.idea/
+# Ignore MacOS specific files
+.DS_Store
