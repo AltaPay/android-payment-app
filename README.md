@@ -6,6 +6,10 @@ This repository contains a reusable **AltaPay Merchant Android SDK** along with 
 
 ![Altapay-MobileApp-Setup](docs/Altapay-MobileApp-Setup.png)
 
+## Checkout API flow
+
+![Altapay-MobileApp-Setup](docs/Altapay-MobileApp-Checkout-Setup.svg)
+
 ## Repository Overview
 
 This project is structured as a **multi-module Android project**:
