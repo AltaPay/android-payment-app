@@ -14,7 +14,11 @@ data class CreateSessionRequest(
 
     @SerializedName("configuration")
     @Expose
-    val configuration: Configuration
+    val configuration: Configuration,
+
+    @SerializedName("isNativeFlow")
+    @Expose
+    val isNativeFlow: Boolean? = null
 )
 
 data class Order(
