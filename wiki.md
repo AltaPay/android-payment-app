@@ -5,7 +5,7 @@ It covers **project setup**, **demo app usage**, and **two integration approache
 
 - **Merchant API(`altapayMerchant`)**
 - **Checkout API (`altapayCheckout`)**
-- - [Import Cartridge](#import-cartridge)
+- **[Handling Payment Callbacks](#handling-payment-callbacks)**: Web vs. Native app-to-app redirect flow
 
 ## How to use
 
@@ -58,6 +58,55 @@ paymentClient = PaymentClient(
 | amount         | Payment amount    |
 | currency       | Currency          |
 | otherparameter | value             |
+| callback_ok       | Notifies the merchant the payment succeeded. See [Handling Payment Callbacks](#handling-payment-callbacks). |
+| callback_failure  | Notifies the merchant the payment failed. See [Handling Payment Callbacks](#handling-payment-callbacks). |
+| callback_redirect | Styling for the loading page shown while the customer is redirected to a third party (e.g. 3-D Secure). **Not** a final redirect target (see below). |
+
+## Handling Payment Callbacks
+
+### CallbackRedirect (`redirect`)
+
+[`callbacks.redirect`](https://documentation.altapay.com/v2/Checkout-API/Integration/#configuring-payment-status-callbacks) tells Checkout where to send the customer back to once they're done interacting with the payment method (e.g. Bancontact). It can be an `HTTPS` URL or a custom app protocol, and App Links (Android) / Universal Links (iOS) are recommended over a bare custom scheme.
+
+Which flow applies is controlled by `isNativeFlow`, a boolean root-level session parameter on `CreateSessionRequest`, not by what `redirect` is set to (`redirect` itself is used differently in each flow, described below):
+
+```kotlin
+val sessionRequest = CreateSessionRequest(
+    order = order,
+    callbacks = callbacks,
+    configuration = configuration,
+    isNativeFlow = true
+)
+```
+
+- **Web-Based Flow (`isNativeFlow = false` or unset):** the payment page renders in a WebView. Once the payment method finishes, the Gateway calls `callback_ok`/`callback_failure` server-to-server, then the Gateway navigates the WebView to `redirect`. On Android, intercept this via `PaymentWebViewHelper.attach`'s `onUrlChanged` and close the WebView:
+
+  ```kotlin
+  val redirectUrl = "https://merchant.example.com/app-link"
+
+  PaymentWebViewHelper.attach(webView) { url ->
+      if (url.startsWith(redirectUrl)) {
+          closeWebView()
+      }
+  }
+  ```
+
+- **Native App Flow (`isNativeFlow = true`):** Checkout skips the payment page entirely for app-based payment methods and redirects the customer straight into the payment method's app, using `AppUrl` (a field returned in the Merchant API's `createPaymentRequest` response that, when POSTed to with device info, returns a native redirect URL, e.g. `mobilepayonline-test://...`), instead of passing `CallbackRedirect` through to the Merchant API's `callback_redirect`. The payment method's app then redirects back via `redirect` as an OS-level deep link, which requires an `<intent-filter>` registered in `AndroidManifest.xml`:
+
+  ```xml
+  <activity android:name=".CheckoutActivity" android:exported="true">
+      <intent-filter>
+          <action android:name="android.intent.action.VIEW" />
+          <category android:name="android.intent.category.DEFAULT" />
+          <category android:name="android.intent.category.BROWSABLE" />
+          <data android:scheme="https" android:host="merchant.example.com" android:pathPrefix="/app-link" />
+      </intent-filter>
+  </activity>
+  ```
+
+  The [official `AppUrl` docs](https://documentation.altapay.com/Content/Ecom/Scenarios/Initiate%20credit%20card%20wallet%20payment%20in%20APP.htm) list MobilePay and Vipps; Bancontact support has since been added but isn't reflected on that page yet.
+
+> When integrating directly against the Merchant API, do not pass an app deep link as [`callback_redirect`](https://documentation.altapay.com/Content/Ecom/Payment%20Pages/Payment%20Page%20Redirect.htm): that page is shown while the customer is being redirected to a third party (e.g. 3-D Secure) and "should not do anything except tell the customer that they are being redirected." Forms and meta tags are stripped from it, so it can't even serve as a redirect target itself.
 
 ## Merchant SDK Integration (`altapayMerchant`)
 
@@ -201,7 +250,7 @@ webView.loadUrl(paymentUrl)
 ```
 
 #### Handling Payment Completion
-Monitor the WebView’s state to detect successful payment completion, failure, or cancellation.
+Monitor the WebView’s state to detect when the payment flow has finished, so you know when to close the WebView.
 
 ```kotlin
 webView.webViewClient = object : WebViewClient() {
@@ -217,3 +266,5 @@ webView.webViewClient = object : WebViewClient() {
     }
 }
 ```
+
+> **Do not treat these URL keywords as the source of truth for the payment result.** As covered in [Handling Payment Callbacks](#handling-payment-callbacks), the actual success/failure result is delivered to your backend via `CallbackSuccess`/`CallbackFailure`, not through the WebView's navigation. Use URL matching only to decide when to close the WebView (see [Handling the App Return URL on Android](#handling-the-app-return-url-on-android)), and confirm the outcome by querying your backend's order status.
